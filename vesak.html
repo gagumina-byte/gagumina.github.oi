@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Gagumina Vesak Wishes</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Vesak</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
+body{height:100vh;overflow:hidden;background:linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.85)),url('https://images.unsplash.com/photo-1524492449090-1d9f2c1e0f51');background-size:cover;background-position:center;color:#fff}
+.hero{display:flex;justify-content:center;align-items:center;height:100vh;text-align:center;padding:20px;position:relative;z-index:2}
+.content{max-width:700px;animation:fadeIn 2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+h1{font-size:3.5rem;color:#ffd700;margin-bottom:15px;text-shadow:0 0 20px rgba(255,215,0,.7)}
+h2{font-size:1.5rem;margin-bottom:20px}
+p{font-size:1.1rem;line-height:1.6;margin-bottom:30px}
+.btn{padding:12px 25px;background:#ffd700;color:#000;border:none;border-radius:30px;font-size:1rem;cursor:pointer;transition:.3s;text-decoration:none}
+.btn:hover{background:#fff}
+
+/* lanterns */
+.lantern{position:absolute;bottom:-100px;width:40px;height:60px;background:#ffcc00;border-radius:10px;box-shadow:0 0 20px rgba(255,204,0,.8);animation:float 8s linear infinite;opacity:.85;z-index:1}
+@keyframes float{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-120vh) scale(1.2)}}
+.lantern:nth-child(1){left:10%;animation-duration:7s}
+.lantern:nth-child(2){left:25%;animation-duration:9s}
+.lantern:nth-child(3){left:40%;animation-duration:6s}
+.lantern:nth-child(4){left:55%;animation-duration:8s}
+.lantern:nth-child(5){left:70%;animation-duration:10s}
+.lantern:nth-child(6){left:85%;animation-duration:7.5s}
+
+/* stars */
+.star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;animation:twinkle 2s infinite alternate;z-index:1}
+@keyframes twinkle{from{opacity:.2}to{opacity:1}}
+
+/* audio controls */
+.audio-box{position:fixed;right:15px;bottom:15px;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);padding:10px 12px;border-radius:12px;z-index:3}
+.audio-box label{font-size:.8rem;display:block;margin-bottom:4px;opacity:.8}
+
+/* footer */
+.footer{position:absolute;bottom:10px;width:100%;text-align:center;font-size:.9rem;opacity:.8;z-index:2}
+
+/* fireworks canvas */
+#fireworks{position:fixed;inset:0;z-index:0}
+
+@media(max-width:768px){h1{font-size:2.2rem}h2{font-size:1.2rem}}
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<!-- Lanterns -->
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+<div class="lantern"></div>
+
+<!-- Stars -->
+<div class="star" style="top:10%; left:20%"></div>
+<div class="star" style="top:30%; left:70%"></div>
+<div class="star" style="top:60%; left:40%"></div>
+<div class="star" style="top:80%; left:10%"></div>
+
+<section class="hero">
+  <div class="content">
+    <h1>සුභ වෙසක් මංගල්‍යක් වේවා 🪔</h1>
+    <h2>May Peace & Enlightenment Guide You</h2>
+    <p>
+      May the light of Vesak lanterns remove all darkness from your life and guide you toward peace,
+      wisdom, and happiness. Let compassion and kindness shine in your heart.
+    </p>
+    <a href="#" class="btn">Share Blessings</a>
+  </div>
+</section>
+
+<div class="footer">🌸 Wishing You a Blessed Vesak 🌸
+<p>From Gagumina 💛</p></div>
+
+<!-- Audio (autoplay with volume control) -->
+<audio id="bgm" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6c6b9b3c0b.mp3?filename=meditation-relaxing-ambient-110624.mp3" autoplay loop muted></audio>
+<div class="audio-box">
+  <label>🔊 Vesak Music</label>
+  <input id="vol" type="range" min="0" max="1" step="0.01" value="0.3">
+</div>
+
+<script>
+// enable audio after first user interaction (browser policy)
+const audio = document.getElementById('bgm');
+const vol = document.getElementById('vol');
+vol.addEventListener('input', e => audio.volume = e.target.value);
+window.addEventListener('click', () => { audio.muted = false; audio.volume = vol.value; }, { once:true });
+
+// Simple fireworks
+const c = document.getElementById('fireworks');
+const ctx = c.getContext('2d');
+let W, H; function resize(){W=c.width=innerWidth; H=c.height=innerHeight} resize(); addEventListener('resize', resize);
+
+class Particle{
+  constructor(x,y,angle,speed,color){
+    this.x=x; this.y=y; this.vx=Math.cos(angle)*speed; this.vy=Math.sin(angle)*speed; this.life=100; this.color=color;
+  }
+  update(){ this.x+=this.vx; this.y+=this.vy; this.vy+=0.02; this.life--; }
+  draw(){ ctx.globalAlpha = Math.max(this.life/100,0); ctx.fillStyle=this.color; ctx.fillRect(this.x,this.y,2,2); }
+}
+
+let particles=[];
+function burst(){
+  const x=Math.random()*W, y=Math.random()*H*0.6;
+  const colors=['#ffd700','#ffcc00','#ffffff','#ffa500'];
+  for(let i=0;i<80;i++){
+    const a=Math.random()*Math.PI*2, s=Math.random()*3+1;
+    particles.push(new Particle(x,y,a,s,colors[Math.floor(Math.random()*colors.length)]));
+  }
+}
+setInterval(burst, 1200);
+
+function loop(){
+  ctx.clearRect(0,0,W,H);
+  particles = particles.filter(p=>p.life>0);
+  particles.forEach(p=>{p.update(); p.draw();});
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+
+</body>
+</html>
